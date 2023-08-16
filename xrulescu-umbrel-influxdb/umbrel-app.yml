@@ -1,0 +1,26 @@
+manifestVersion: 1
+id: xrulescu-umbrel-influxdb
+name: InfluxDB
+category: Database
+version: "0.0.1"
+tagline: Scrypted is a high performance home video integration platform.
+icon: https://github.com/walkxcode/dashboard-icons/blob/main/png/scrypted.png?raw=true
+description: >
+  InfluxDB is an open-source time series database developed by the company InfluxData. It is used for storage and 
+  retrieval of time series data in fields such as operations monitoring, application metrics, Internet of Things sensor 
+  data, and real-time analytics. It also has support for processing data from Graphite....
+developer: Koush
+website: https://www.influxdata.com
+dependencies: []
+repo: https://github.com/koush/scrypted
+support: https://github.com/koush/scrypted/issues
+port: 8086
+gallery:
+  - https://docs.scrypted.app/assets/install-plugin.164ec654.png
+path: ""
+defaultPassword: ""
+torOnly: false
+releaseNotes: >
+  release notes
+submitter: XRulescu
+submission:
