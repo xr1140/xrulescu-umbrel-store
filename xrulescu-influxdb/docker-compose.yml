@@ -15,12 +15,4 @@ services:
       - ${APP_DATA_DIR}/data:/data
       - ${APP_DATA_DIR}/config:/config
       - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=paxx
-      - DOCKER_INFLUXDB_INIT_ORG=org
-      - DOCKER_INFLUXDB_INIT_BUCKET=init_bucket
-      - DOCKER_INFLUXDB_INIT_RETENTION=1w
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=randomTokenValue
     restart: unless-stopped
