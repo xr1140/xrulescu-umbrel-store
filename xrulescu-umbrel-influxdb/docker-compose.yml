@@ -4,7 +4,7 @@ services:
   app_proxy:
     environment:
       APP_HOST: xrulescu-umbrel-influxdb_server_1
-      APP_PORT: 10101
+      APP_PORT: 3008
 
   server:
     image: influxdb:2.7.1
@@ -21,4 +21,4 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=init_bucket
       - DOCKER_INFLUXDB_INIT_RETENTION=1w
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=randomTokenValue
-    restart: always
+    restart: unless-stopped
