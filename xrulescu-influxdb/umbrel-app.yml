@@ -1,5 +1,5 @@
 manifestVersion: 1
-id: xrulescu-umbrel-influxdb
+id: xrulescu-influxdb
 name: InfluxDB
 category: Databases
 version: "0.0.1"

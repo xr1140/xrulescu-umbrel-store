@@ -3,7 +3,7 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      APP_HOST: xrulescu-umbrel-influxdb_server_1
+      APP_HOST: xrulescu-influxdb_server_1
       APP_PORT: 3008
       PROXY_AUTH_ADD: "false"
 
