@@ -7,6 +7,7 @@ This repository contains the XRulescu Umbrel App Store. This app store is a comm
 | App Name | Added         | Last Updated    | Updated By | Version |
 |----------|---------------|-----------------|------------|---------|
 | InfluxDB | Aug 15th 2023 | Aug 16th 2023   | XRulescu   | 0.0.1   |
+| Graphana | Oct 17th 2023 | Oct 17th 2023   | XRulescu   | 0.0.1   |
 
 
 ### Technical Details
