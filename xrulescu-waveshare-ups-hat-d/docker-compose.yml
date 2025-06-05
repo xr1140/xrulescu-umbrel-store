@@ -1,7 +1,7 @@
 services:
   app_proxy:
     environment:
-      APP_HOST: xrulescu-ups_hat_d_server_1
+      APP_HOST: xrulescu-waveshare-ups-hat-d_server_1
       APP_PORT: 1140
       PROXY_AUTH_ADD: "false"
 
