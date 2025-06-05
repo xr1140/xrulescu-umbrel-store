@@ -10,8 +10,8 @@ services:
     user: "1000:1000"
     group_add:
       - 111  # GID-ul grupului i2c pe gazda
-#    ports:
-#      - "1140:1140"
+    ports:
+      - "1140:1140"
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
 #    container_name: waveshare-ups-hat
