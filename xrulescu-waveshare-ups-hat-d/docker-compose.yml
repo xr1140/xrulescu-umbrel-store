@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: xrulescu-ups_hat_d_server_1
+      APP_PORT: 8086
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: xr1140/ups_hat_d-api:latest
+    ports:
+      - "5000:5000"
+    devices:
+      - "/dev/i2c-1:/dev/i2c-1"
+    volumes:
+      - .:/app
+    group_add:
+      - 111  # GID-ul grupului i2c pe gazda
+    user: "1000:1000"          
+    container_name: waveshare-ups-hat    
+    restart: unless-stopped
