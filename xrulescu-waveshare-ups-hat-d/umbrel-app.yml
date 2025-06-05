@@ -2,7 +2,7 @@ manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-d
 name: Waveshare UPS Hat D
 category: Monitoring
-version: "0.0.2"
+version: "0.0.3"
 tagline: UPS Hat for Raspberry Pi.
 icon: https://www.waveshare.com/w/upload/a/a7/Ws-watermark-en.svg
 description: >

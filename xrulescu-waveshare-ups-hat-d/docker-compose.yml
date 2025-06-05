@@ -4,7 +4,7 @@ services:
   app_proxy:
     environment:
       APP_HOST: xrulescu-ups_hat_d_server_1
-      APP_PORT: 8086
+      APP_PORT: 18086
       PROXY_AUTH_ADD: "false"
 
   server:
