@@ -4,7 +4,7 @@ services:
   app_proxy:
     environment:
       APP_HOST: xrulescu-ups_hat_d_server_1
-      APP_PORT: 18086
+      APP_PORT: 18087
       PROXY_AUTH_ADD: "false"
 
   server:
@@ -13,7 +13,7 @@ services:
     group_add:
       - 111  # GID-ul grupului i2c pe gazda    
     ports:
-      - "18086:5000"
+      - "18087:5000"
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
     container_name: waveshare-ups-hat    
