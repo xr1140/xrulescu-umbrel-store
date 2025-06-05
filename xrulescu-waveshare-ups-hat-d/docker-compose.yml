@@ -9,12 +9,12 @@ services:
 
   server:
     image: xr1140/ups_hat_d-api:latest
+    user: "1000:1000"              
+    group_add:
+      - 111  # GID-ul grupului i2c pe gazda    
     ports:
-      - "15001:15001"
+      - "18086:5000"
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
-    group_add:
-      - 111  # GID-ul grupului i2c pe gazda
-    user: "1000:1000"          
     container_name: waveshare-ups-hat    
     restart: unless-stopped
