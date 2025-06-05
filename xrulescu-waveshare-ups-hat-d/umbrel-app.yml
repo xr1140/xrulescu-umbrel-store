@@ -2,23 +2,21 @@ manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-d
 name: Waveshare UPS Hat D
 category: Monitoring
-version: "0.0.3"
+version: "0.0.5"
 tagline: UPS Hat for Raspberry Pi.
 icon: https://www.waveshare.com/w/upload/a/a7/Ws-watermark-en.svg
 description: >
   The UPS HAT (D) is an uninterruptible power supply (UPS) expansion board specially designed for the Raspberry Pi series.
-  Onboard switching Li battery charging chip with path management, boost converter chip, and voltage/current monitoring chip.
-  Supports simultaneous charging and discharging, and can provide stable 5V voltage output. Also, you can monitor the parameters
-  via the I2C interface, such as the battery voltage, current, and power. Supports displaying the battery level on the system,
-  easy to check the battery's remaining capacity.
 developer: Waveshare
 website: https://www.waveshare.com/ups-hat-d.htm
 dependencies: []
-repo: https://github.com/influxdata
 support: https://www.waveshare.com/ups-hat-d.htm
-port: 8086
+port: 18086
 gallery:
-  - https://www.waveshare.com/media/catalog/product/cache/1/small_image/171x171/9df78eab33525d08d6e5fb8d27136e95/u/p/ups-hat-d-2.jpg
+  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-3.jpg
+  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-9.jpg
+  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-7.jpg
+
 path: ""
 defaultPassword: ""
 torOnly: false

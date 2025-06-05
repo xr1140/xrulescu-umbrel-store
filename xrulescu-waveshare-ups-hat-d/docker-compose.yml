@@ -4,7 +4,7 @@ services:
   app_proxy:
     environment:
       APP_HOST: xrulescu-ups_hat_d_server_1
-      APP_PORT: 18086
+      APP_PORT: 8086
       PROXY_AUTH_ADD: "false"
 
   server:
@@ -13,8 +13,6 @@ services:
       - "15001:15001"
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
-    volumes:
-      - .:/app
     group_add:
       - 111  # GID-ul grupului i2c pe gazda
     user: "1000:1000"          
