@@ -10,7 +10,7 @@ services:
   server:
     image: xr1140/ups_hat_d-api:latest
     ports:
-      - "5000:5000"
+      - "15001:15001"
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
     volumes:
