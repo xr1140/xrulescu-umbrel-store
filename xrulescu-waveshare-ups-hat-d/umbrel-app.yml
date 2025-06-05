@@ -2,7 +2,7 @@ manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-d
 name: Waveshare UPS Hat D - API Endpoint
 category: Monitoring
-version: "0.0.9"
+version: "0.0.10"
 tagline: UPS Hat for Raspberry Pi 4/5.
 icon: https://www.waveshare.com/w/upload/a/a7/Ws-watermark-en.svg
 description: >
@@ -11,7 +11,7 @@ developer: XRulescu
 website: https://www.waveshare.com/ups-hat-d.htm
 dependencies: []
 support: https://github.com/xr1140/xrulescu-umbrel-store
-port: 11280
+port: 1140
 gallery:
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-3.jpg
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-9.jpg
