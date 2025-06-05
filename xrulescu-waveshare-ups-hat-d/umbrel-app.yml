@@ -1,16 +1,16 @@
 manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-d
-name: Waveshare UPS Hat D
+name: Waveshare UPS Hat D - API Endpoint
 category: Monitoring
-version: "0.0.7"
+version: "0.0.8"
 tagline: UPS Hat for Raspberry Pi 4/5.
 icon: https://www.waveshare.com/w/upload/a/a7/Ws-watermark-en.svg
 description: >
   The UPS HAT (D) is an uninterruptible power supply (UPS) expansion board specially designed for the Raspberry Pi series.
-developer: Waveshare
+developer: XRulescu
 website: https://www.waveshare.com/ups-hat-d.htm
 dependencies: []
-support: https://www.waveshare.com/ups-hat-d.htm
+support: https://github.com/xr1140/xrulescu-umbrel-store
 port: 18087
 gallery:
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-3.jpg
