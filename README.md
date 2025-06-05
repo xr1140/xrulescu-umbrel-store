@@ -4,10 +4,12 @@ This repository contains the XRulescu Umbrel App Store. This app store is a comm
 
 ## Apps
 
-| App Name | Added         | Last Updated    | Updated By | Version |
-|----------|---------------|-----------------|------------|---------|
-| InfluxDB | Aug 15th 2023 | Aug 16th 2023   | XRulescu   | 0.0.1   |
-| Graphana | Oct 17th 2023 | Oct 17th 2023   | XRulescu   | 0.0.1   |
+| App Name  | Added         | Last Updated    | Updated By | Version |
+|-----------|---------------|-----------------|------------|---------|
+| InfluxDB  | Aug 15th 2023 | Aug 16th 2023   | XRulescu   | 0.0.1   |
+| Graphana  | Oct 17th 2023 | Oct 17th 2023   | XRulescu   | 0.0.1   |
+| Electrs   | May 20th 2025 | May 20th 2025   | XRulescu   | x.x.x   |
+| UPS Hat D | Jun 05th 2025 | Jun 05th 2025   | XRulescu   | x.x.x   |
 
 
 ### Technical Details
