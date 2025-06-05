@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   app_proxy:
     environment:
@@ -9,12 +7,12 @@ services:
 
   server:
     image: xr1140/ups_hat_d-api:latest
-    user: "1000:1000"              
+    user: "1000:1000"
     group_add:
-      - 111  # GID-ul grupului i2c pe gazda    
+      - 111  # GID-ul grupului i2c pe gazda
     ports:
       - "18087:5000"
     devices:
       - "/dev/i2c-1:/dev/i2c-1"
-    container_name: waveshare-ups-hat    
+#    container_name: waveshare-ups-hat
     restart: unless-stopped
