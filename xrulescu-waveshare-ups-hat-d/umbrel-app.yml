@@ -11,7 +11,7 @@ developer: XRulescu
 website: https://www.waveshare.com/ups-hat-d.htm
 dependencies: []
 support: https://github.com/xr1140/xrulescu-umbrel-store
-port: 18087
+port: 2041
 gallery:
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-3.jpg
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-9.jpg
