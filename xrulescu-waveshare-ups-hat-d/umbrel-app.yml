@@ -21,7 +21,6 @@ path: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >
-  - added html page
-  - added /api/info
+  - added html page, moved api access to /api/info
 submitter: XRulescu
 submission:
