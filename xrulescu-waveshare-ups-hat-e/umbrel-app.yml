@@ -15,8 +15,8 @@ support: https://github.com/xr1140/xrulescu-umbrel-store
 port: 1140
 gallery:
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-3.jpg
-  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-9.jpg
-  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-7.jpg
+  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-E/UPS-HAT-E-details-1.jpg
+  - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-E/UPS-HAT-E-details-2.jpg
 path: ""
 defaultPassword: ""
 torOnly: false
