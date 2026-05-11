@@ -1,0 +1,16 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: xrulescu-waveshare-ups-hat-e_server_1
+      APP_PORT: 1140
+      PROXY_AUTH_ADD: "false"
+    container_name: xrulescu-waveshare-ups-hat-e_app_proxy_1
+  server:
+    image: xr1140/ups_hat_e-api:latest
+    user: "1000:1000"
+    group_add:
+      - 111
+    devices:
+      - /dev/i2c-1:/dev/i2c-1
+    restart: unless-stopped
+    container_name: xrulescu-waveshare-ups-hat-e_server_1
