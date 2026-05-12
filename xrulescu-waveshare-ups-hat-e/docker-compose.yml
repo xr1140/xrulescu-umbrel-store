@@ -14,7 +14,7 @@ services:
     image: xr1140/ups_hat_e-api:latest
     user: "1000:1000"
     group_add:
-      - 105 # I2C group GID for Raspberry Pi I2C device access
+      - 1015 # I2C group GID for Raspberry Pi I2C device access
     devices:
       - /dev/i2c-1:/dev/i2c-1
     restart: unless-stopped
