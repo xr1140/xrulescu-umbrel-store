@@ -1,6 +1,6 @@
 manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-d
-name: Waveshare UPS Hat D - API Endpoint
+name: Waveshare UPS Hat D
 category: Monitoring
 version: "0.0.21"
 tagline: UPS Hat for Raspberry Pi 4.
@@ -18,9 +18,32 @@ gallery:
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-9.jpg
   - https://www.waveshare.com/img/devkit/accBoard/UPS-HAT-D/UPS-HAT-D-details-7.jpg
 path: ""
+defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >
-  - added web interface for monitoring the UPS Hat D
+  - Integrated umbrelOS widget endpoint for dashboard display
+  - Widget shows battery percentage, status, current, and power
+  - Single Flask server handles all endpoints (web interface, API, widget)
 submitter: XRulescu
-submission:
+widgets:
+  - id: "battery-stats"
+    type: "four-stats"
+    refresh: "60s"
+    endpoint: "server:1140/api/widget"
+    link: ""
+    example:
+      type: "four-stats"
+      link: ""
+      items:
+        - title: "Battery"
+          text: "75"
+          subtext: "%"
+        - title: "Status"
+          text: "Discharging"
+        - title: "Current"
+          text: "-1500"
+          subtext: "mA"
+        - title: "Power"
+          text: "7.50"
+          subtext: "W"
