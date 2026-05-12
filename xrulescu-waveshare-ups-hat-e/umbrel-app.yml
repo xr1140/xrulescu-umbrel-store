@@ -25,7 +25,6 @@ releaseNotes: >
   - Integrated umbrelOS widget endpoint for dashboard display
   - Widget shows battery percentage, status, voltage, and power consumption
   - Single Flask server handles all endpoints (web interface, API, widget)
-submitter: XRulescu
 developer: XRulescu
 widgets:
   - id: "battery-stats"
