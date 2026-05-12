@@ -1,16 +1,20 @@
 services:
+  # Umbrel reverse proxy - forwards HTTP requests to Flask server
   app_proxy:
     environment:
       APP_HOST: xrulescu-waveshare-ups-hat-e_server_1
       APP_PORT: 1140
       PROXY_AUTH_ADD: "false"
 
+  # Flask API server providing:
+  # - GET / → HTML dashboard for monitoring
+  # - GET /api/info → Full JSON API with battery/power metrics
+  # - GET /widgets/ups → umbrelOS widget (four-stats: Battery %, Status, Voltage, Power)
   server:
     image: xr1140/ups_hat_e-api:latest
     user: "1000:1000"
     group_add:
-      - 105  # GID-ul grupului i2c pe gazda
+      - 105 # I2C group GID for Raspberry Pi I2C device access
     devices:
       - /dev/i2c-1:/dev/i2c-1
-    #container_name: xrulescu-waveshare-ups-hat-e_server_1
-    restart: unless-stopped    
+    restart: unless-stopped
