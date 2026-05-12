@@ -1,13 +1,14 @@
 manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-e
-name: Waveshare UPS Hat E - API Endpoint
+name: Waveshare UPS Hat E
 category: Monitoring
-version: "0.0.22"
+version: "0.0.23"
 tagline: UPS Hat (E) for Raspberry Pi 4/5.
 icon: https://www.waveshare.com/w/upload/a/a7/Ws-watermark-en.svg
 description: >
   The UPS HAT (E) is an uninterruptible power supply (UPS) expansion board specially designed for the Raspberry Pi series.
   You need I2C enabled on your Raspberry Pi to use this app.
+developer: XRulescu
 website: https://www.waveshare.com/ups-hat-e.htm
 dependencies: []
 support: https://github.com/xr1140/xrulescu-umbrel-store
@@ -22,18 +23,17 @@ defaultPassword: ""
 torOnly: false
 releaseNotes: >
   - Integrated umbrelOS widget endpoint for dashboard display
-  - Widget shows battery percentage, status, voltage, and power consumption
+  - Widget shows battery percentage, status, and current
   - Single Flask server handles all endpoints (web interface, API, widget)
-developer: XRulescu
-submiter: XRulescu
+submitter: XRulescu
 widgets:
   - id: "battery-stats"
-    type: "four-stats"
+    type: "three-stats"
     refresh: "60s"
-    endpoint: "localhost:1140/widgets/ups"
+    endpoint: "server:1140/api/widget"
     link: ""
     example:
-      type: "four-stats"
+      type: "three-stats"
       link: ""
       items:
         - title: "Battery"
@@ -41,9 +41,6 @@ widgets:
           subtext: "%"
         - title: "Status"
           text: "-"
-        - title: "Voltage"
+        - title: "Current"
           text: "-"
-          subtext: "V"
-        - title: "Power"
-          text: "-"
-          subtext: "W"
+          subtext: "mA"
