@@ -4,7 +4,11 @@ services:
       APP_HOST: xrulescu-waveshare-ups-hat-d_server_1
       APP_PORT: 1140
       PROXY_AUTH_ADD: "false"
-
+      
+  # Flask API server providing:
+  # - GET / → HTML dashboard for monitoring
+  # - GET /api/info → Full JSON API with battery/power metrics
+  # - GET /widgets/ups → umbrelOS widget (four-stats: Battery %, Status, Voltage, Power)
   server:
     image: xr1140/ups_hat_d-api:latest
     group_add:
