@@ -17,4 +17,6 @@ services:
       - 1015 # I2C group GID for Raspberry Pi I2C device access
     devices:
       - /dev/i2c-1:/dev/i2c-1
+    volumes:
+      - ./data:/app/data
     restart: unless-stopped
