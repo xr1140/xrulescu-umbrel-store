@@ -7,7 +7,6 @@ services:
 
   server:
     image: xr1140/ups_hat_d-api:latest
-    user: "1000:1000"
     group_add:
       - 1015 # GID-ul grupului i2c pe gazda
     devices:
