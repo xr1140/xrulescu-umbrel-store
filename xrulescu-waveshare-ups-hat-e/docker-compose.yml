@@ -12,7 +12,6 @@ services:
   # - GET /widgets/ups → umbrelOS widget (four-stats: Battery %, Status, Voltage, Power)
   server:
     image: xr1140/ups_hat_e-api:latest
-    user: "1000:1000"
     group_add:
       - 1015 # I2C group GID for Raspberry Pi I2C device access
     devices:
