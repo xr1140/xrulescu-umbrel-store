@@ -7,7 +7,7 @@ on:
       - "upstream.env"
       - "patches/**"
       - "docker/**"
-      - ".github/workflows/build-image.yml"
+      - ".github/workflows/build-kanzo-image.yml"
   workflow_dispatch:
 
 concurrency:
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Read the upstream pin
-        run: cat upstream.env >> "$GITHUB_ENV"
+        run: grep -E '^[A-Za-z_][A-Za-z0-9_]*=' upstream.env >> "$GITHUB_ENV"
 
       - name: Set the image name (GHCR needs lowercase)
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/kanzo-umbrel" >> "$GITHUB_ENV"
