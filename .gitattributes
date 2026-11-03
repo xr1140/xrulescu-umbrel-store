@@ -1,0 +1,8 @@
+# Keep the entrypoint, scripts and patch LF-only, even on Windows checkouts.
+* text=auto eol=lf
+
+# Unified diff context lines are a single space; that is not a whitespace error.
+patches/*.patch -whitespace
+*.png binary
+*.jpg binary
+*.gif binary

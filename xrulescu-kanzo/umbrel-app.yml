@@ -1,0 +1,45 @@
+manifestVersion: 1
+id: xrulescu-kanzo
+category: developer
+name: Kanzo
+version: "0.3.0"
+tagline: A tiny kanban board for you and your coding agents
+icon: https://raw.githubusercontent.com/emanuele-em/kanzo/main/src/logo.png
+description: >-
+  Kanzo is a kanban board in your browser and an MCP server in one small
+  program, so you and your coding agents work on the same tasks. No account,
+  no setup: the board opens and everything lives in this app's data folder.
+
+
+  Tasks are created and moved on the board, from the `kanzo` command, or by
+  agents over MCP. Mark a task Human and agents leave it to you. Press `n` for
+  a new task, `/` or `⌘K` to search every project, `f` to filter.
+
+
+  This package serves the board through Umbrel, so Umbrel's login protects it
+  on your network. Kanzo's own Share and Join buttons are not used here: the
+  board already listens inside its container. Data stays in this app's data
+  folder and is included in Umbrel backups.
+
+
+  Updates arrive through Umbrel's app store; Kanzo's self-update is disabled
+  in this package.
+developer: emanuele-em
+website: https://github.com/emanuele-em/kanzo
+dependencies: []
+repo: https://github.com/emanuele-em/kanzo
+support: https://github.com/emanuele-em/kanzo/issues
+port: 4290
+gallery:
+  - https://raw.githubusercontent.com/emanuele-em/kanzo/main/docs/img/board-light.gif
+  - https://raw.githubusercontent.com/emanuele-em/kanzo/main/docs/img/task-light.jpg
+  - https://raw.githubusercontent.com/emanuele-em/kanzo/main/docs/img/share-light.jpg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+releaseNotes: >-
+  First Umbrel package, built from Kanzo 0.3.0 with a small patch that lets the
+  board answer requests forwarded by Umbrel's app proxy.
+submitter: XRulescu
+submission:
