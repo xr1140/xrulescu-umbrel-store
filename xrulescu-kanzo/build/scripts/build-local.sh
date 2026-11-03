@@ -14,7 +14,7 @@ TAG="${TAG:-kanzo-umbrel:dev}"
 docker buildx build --load \
 	--platform "$PLATFORM" \
 	--build-arg "KANZO_VERSION=$KANZO_VERSION" \
-	-f docker/Dockerfile \
+	-f Dockerfile \
 	-t "$TAG" \
 	.
 
