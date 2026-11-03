@@ -1,0 +1,102 @@
+name: Build and publish Kanzo for Umbrel
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "upstream.env"
+      - "patches/**"
+      - "docker/**"
+      - ".github/workflows/build-image.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the upstream pin
+        run: cat upstream.env >> "$GITHUB_ENV"
+
+      - name: Set the image name (GHCR needs lowercase)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/kanzo-umbrel" >> "$GITHUB_ENV"
+
+      - name: Download and verify the upstream source
+        run: bash scripts/fetch-source.sh
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build linux/amd64 and linux/arm64
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            KANZO_VERSION=${{ env.KANZO_VERSION }}
+          tags: ${{ env.IMAGE }}:${{ env.KANZO_VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Pin the digest in the app manifest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          python3 - "$IMAGE" "$KANZO_VERSION" "$DIGEST" <<'PY'
+          import pathlib, re, sys
+          image, version, digest = sys.argv[1:4]
+          path = pathlib.Path("xrulescu-kanzo/docker-compose.yml")
+          text = path.read_text()
+          line = f"    image: {image}:{version}@{digest}"
+          text, found = re.subn(r"^    image: ghcr\.io/\S+$", line, text, flags=re.M)
+          if found != 1:
+              raise SystemExit("could not find the image line in xrulescu-kanzo/docker-compose.yml")
+          path.write_text(text)
+          print(line)
+          PY
+
+      - name: Commit the pinned digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add xrulescu-kanzo/docker-compose.yml
+          if git diff --cached --quiet; then
+            echo "The manifest is already pinned to this image."
+          else
+            git commit -m "Pin Kanzo ${KANZO_VERSION} (${DIGEST})"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Summary
+        if: always()
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo "### Kanzo ${KANZO_VERSION} for Umbrel"
+            echo
+            echo "- Image: \`${IMAGE}:${KANZO_VERSION}\`"
+            echo "- Digest: \`${DIGEST}\`"
+            echo
+            echo "Make the package public in GitHub's package settings, or Umbrel cannot pull it."
+          } >> "$GITHUB_STEP_SUMMARY"

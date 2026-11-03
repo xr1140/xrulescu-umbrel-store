@@ -1,0 +1,64 @@
+Kanzo behind a reverse proxy (Umbrel, Docker, Cloudflare Tunnel, ...).
+
+Umbrel terminates HTTP itself and forwards the browser's own Host header
+(`umbrel.local:4290`) to the app, untouched. Kanzo's DNS-rebinding guard only
+accepts localhost, IP literals and the machine's own names, on its own port, so
+every request through the proxy is answered with 403.
+
+This adds KANZO_TRUST_PROXY=1: the guard accepts the proxy's Host, and an Origin
+is accepted when its authority matches that Host, over http or https. Anything
+else is still refused, so a cross-site page cannot drive the API.
+
+Only set it when a proxy is a sole way into the board.
+diff --git a/src/web.rs b/src/web.rs
+index b94a668..354c5e6 100644
+--- a/src/web.rs
++++ b/src/web.rs
+@@ -188,6 +188,25 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
+         .with_state(Arc::new(home))
+ }
+ 
++/// A reverse proxy (Docker, Umbrel, a tunnel) sends the browser's own `Host`, which is
++/// neither `localhost`, an IP address nor this machine's name, so it sets this to let the
++/// board answer. Only set it where the proxy is the only way in.
++fn trust_proxy() -> bool {
++    static TRUST: OnceLock<bool> = OnceLock::new();
++    *TRUST.get_or_init(|| {
++        std::env::var("KANZO_TRUST_PROXY")
++            .is_ok_and(|v| matches!(v.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes" | "on"))
++    })
++}
++
++/// The proxy may serve the board over https, which `same_origin` below doesn't allow.
++fn trusted_origin(origin: &str, host: &str) -> bool {
++    origin
++        .strip_prefix("http://")
++        .or_else(|| origin.strip_prefix("https://"))
++        .is_some_and(|authority| authority.eq_ignore_ascii_case(host))
++}
++
+ /// Who may use the board: which Host headers it answers to, and whether other
+ /// computers may reach it. Also what this computer does on the network.
+ ///
+@@ -288,6 +307,10 @@ impl Guard {
+     }
+ 
+     fn allows(&self, host: &str) -> bool {
++        // Behind a proxy the browser's Host is the proxy's own name and port.
++        if trust_proxy() {
++            return !host.is_empty();
++        }
+         let (name, port) = match host.rsplit_once(':') {
+             Some((n, p)) if !p.contains(']') => (n, Some(p)),
+             _ => (host, None),
+@@ -339,7 +362,9 @@ async fn protect(State(guard): State<Arc<Guard>>, req: Request, next: Next) -> R
+                 && o.as_bytes()[..7].eq_ignore_ascii_case(b"http://")
+                 && o.as_bytes()[7..].eq_ignore_ascii_case(host.as_bytes())
+         };
+-        guard.allows(host) && header(header::ORIGIN).is_none_or(same_origin) && (guest.is_none() || guard.lan())
++        let origin_ok = header(header::ORIGIN)
++            .is_none_or(|o| same_origin(o) || (trust_proxy() && trusted_origin(o, host)));
++        guard.allows(host) && origin_ok && (guest.is_none() || guard.lan())
+     };
+     if let Some(ip) = guest.filter(|_| ok) {
+         let name =

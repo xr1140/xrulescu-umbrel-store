@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      # The name Umbrel gives the container below: <app-id>_<service>_1.
+      APP_HOST: xrulescu-kanzo_server_1
+      # Kanzo's port inside the container. The public port is in umbrel-app.yml.
+      APP_PORT: 4242
+
+  server:
+    # The workflow rewrites this line with the image digest after each build.
+    image: ghcr.io/xr1140/kanzo-umbrel:0.3.0
+    restart: on-failure
+    init: true
+    stop_grace_period: 30s
+    user: "1000:1000"
+    environment:
+      KANZO_HOME: /data
+      # Umbrel forwards the browser's Host (umbrel.local:<port>), which Kanzo's
+      # DNS-rebinding guard would otherwise refuse. See patches/.
+      KANZO_TRUST_PROXY: "1"
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
