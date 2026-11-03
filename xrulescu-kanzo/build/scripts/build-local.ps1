@@ -30,7 +30,7 @@ try {
 	docker buildx build --load `
 		--platform $Platform `
 		--build-arg "KANZO_VERSION=$KANZO_VERSION" `
-		-f docker/Dockerfile `
+		-f Dockerfile `
 		-t $Tag `
 		.
 	if ($LASTEXITCODE -ne 0) { throw "docker buildx failed" }

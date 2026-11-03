@@ -3,7 +3,7 @@
 # Builds Kanzo from the pinned upstream release tarball and applies the
 # reverse-proxy patch. Multi-arch: linux/amd64 and linux/arm64.
 #
-# The context is the store repository root; run scripts/fetch-source.sh first.
+# The context is this directory; run scripts/fetch-source.sh first.
 
 FROM rust:1.98-alpine3.22@sha256:a1796ca6fa216d6727b5f61c69e4c665b120b1a4dcb969639e2f25f1ed309456 AS build
 
@@ -27,7 +27,7 @@ RUN apk add --no-cache git \
 	&& adduser -D -u 1000 -G kanzo -h /data kanzo
 
 COPY --from=build /src/target/release/kanzo /usr/local/bin/kanzo
-COPY docker/entrypoint.sh /usr/local/bin/kanzo-entrypoint
+COPY entrypoint.sh /usr/local/bin/kanzo-entrypoint
 RUN chmod 0755 /usr/local/bin/kanzo /usr/local/bin/kanzo-entrypoint
 
 USER 1000:1000
