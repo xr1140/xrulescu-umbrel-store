@@ -28,6 +28,16 @@ To test your community app store, you can add this repository through the Umbrel
 https://user-images.githubusercontent.com/10330103/197889452-e5cd7e96-3233-4a09-b475-94b754adc7a3.mp4
 
 
+## Kanzo
+
+[Kanzo](https://github.com/emanuele-em/kanzo) is created by
+[Emanuele Micheletti](https://github.com/emanuele-em) and is licensed under
+[AGPL-3.0](https://github.com/emanuele-em/kanzo/blob/main/LICENSE).
+
+This store packages the upstream release for Umbrel. The image is built from
+the pinned upstream source plus a small patch for Umbrel's reverse proxy and the
+home-screen widget; all credit for Kanzo belongs to its author.
+
 ## Kanzo MCP
 
 Kanzo exposes its MCP server at `http://<umbrel-ip>:4242/mcp`. The board UI stays behind Umbrel's login on port `4290`; port `4242` is unauthenticated by design, so keep it on a trusted LAN or reach it over a VPN.
