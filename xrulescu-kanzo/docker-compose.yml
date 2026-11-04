@@ -22,3 +22,7 @@ services:
       KANZO_TRUST_PROXY: "1"
     volumes:
       - ${APP_DATA_DIR}/data:/data
+    # Direct access for MCP clients and `kanzo join`. This port has no login:
+    # keep it on a trusted LAN or reach it over a VPN.
+    ports:
+      - "4242:4242"
