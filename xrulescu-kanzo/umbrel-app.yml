@@ -2,7 +2,7 @@ manifestVersion: 1
 id: xrulescu-kanzo
 category: developer
 name: Kanzo
-version: "0.3.2"
+version: "0.3.3"
 tagline: A tiny kanban board for you and your coding agents
 icon: https://raw.githubusercontent.com/emanuele-em/kanzo/main/src/logo.png
 description: >-
@@ -44,9 +44,9 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >-
-  Adds an Umbrel home-screen widget with task counts for Todo, Doing, Review
-  and Done. The widget reads a new /api/widget endpoint inside the Kanzo
-  container and does not change the board's data or ports.
+  Adds a second Umbrel home-screen widget: one row per project with open and
+  done counts. The existing four-stats widget is unchanged, and neither widget
+  changes the board's data or ports.
 submitter: XRulescu
 submission:
 widgets:
@@ -67,3 +67,16 @@ widgets:
           text: "1"
         - title: "Done"
           text: "42"
+  - id: "project-counts"
+    type: "list"
+    refresh: "60s"
+    endpoint: "server:4242/api/widget/projects"
+    link: ""
+    example:
+      type: "list"
+      link: ""
+      items:
+        - subtext: "Kanzo on Umbrel"
+          text: "3 open · 15 done"
+        - subtext: "memSpy"
+          text: "0 open · 0 done"
