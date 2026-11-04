@@ -28,6 +28,32 @@ To test your community app store, you can add this repository through the Umbrel
 https://user-images.githubusercontent.com/10330103/197889452-e5cd7e96-3233-4a09-b475-94b754adc7a3.mp4
 
 
+## Kanzo MCP
+
+Kanzo exposes its MCP server at `http://<umbrel-ip>:4242/mcp`. The board UI stays behind Umbrel's login on port `4290`; port `4242` is unauthenticated by design, so keep it on a trusted LAN or reach it over a VPN.
+
+Claude Code:
+
+```sh
+claude mcp add --transport http --scope user kanzo http://<umbrel-ip>:4242/mcp
+```
+
+OpenCode v2:
+
+```sh
+opencode mcp add kanzo --global --url http://<umbrel-ip>:4242/mcp
+```
+
+Or use the native CLI: `kanzo join <umbrel-ip>:4242`, then point the client at `kanzo mcp` (stdio).
+
+Check the endpoint:
+
+```sh
+curl -s -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"test","version":"1"}}}' \
+  http://<umbrel-ip>:4242/mcp
+```
+
 ## CLI How to
 
 To add an app store:

@@ -22,6 +22,11 @@ description: >-
   folder and is included in Umbrel backups.
 
 
+  Agents connect to Kanzo's MCP server at `http://<umbrel-ip>:4242/mcp`. Port
+  4242 has no login, so keep it on a trusted network or use a VPN; the board on
+  port 4290 stays behind Umbrel's login.
+
+
   Updates arrive through Umbrel's app store; Kanzo's self-update is disabled
   in this package.
 developer: emanuele-em
