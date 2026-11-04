@@ -2,7 +2,7 @@ manifestVersion: 1
 id: xrulescu-kanzo
 category: developer
 name: Kanzo
-version: "0.3.3"
+version: "0.3.4"
 tagline: A tiny kanban board for you and your coding agents
 icon: https://raw.githubusercontent.com/emanuele-em/kanzo/main/src/logo.png
 description: >-
