@@ -1,0 +1,97 @@
+name: Smoke-test Kanzo image
+
+on:
+  workflow_run:
+    workflows: ["Build and publish Kanzo for Umbrel"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'master')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Read the pinned image
+        id: image
+        run: |
+          image=$(grep -E '^    image: ' xrulescu-kanzo/docker-compose.yml | sed 's/^    image: //')
+          test -n "$image"
+          echo "ref=$image" >> "$GITHUB_OUTPUT"
+          echo "Testing $image"
+
+      - name: Pull the published image
+        run: docker pull --platform linux/amd64 "${{ steps.image.outputs.ref }}"
+
+      - name: Start Kanzo
+        run: |
+          docker run -d --name kanzo-smoke \
+            -p 127.0.0.1:4291:4242 \
+            -e KANZO_TRUST_PROXY=1 \
+            "${{ steps.image.outputs.ref }}"
+          for _ in $(seq 1 30); do
+            if curl -fsS -H 'Host: umbrel.local:4290' http://127.0.0.1:4291/api/ping | grep -qx kanzo; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs kanzo-smoke
+          exit 1
+
+      - name: Proxy, widget and MCP checks
+        run: |
+          set -euo pipefail
+          base=http://127.0.0.1:4291
+          host='Host: umbrel.local:4290'
+
+          test "$(curl -fsS -H "$host" "$base/api/ping")" = kanzo
+          echo "proxy host: ok"
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+            -H "$host" -H 'Origin: https://evil.example' \
+            -H 'Content-Type: application/json' -d '{}' "$base/api/projects")
+          test "$code" = 403
+          echo "foreign origin: 403"
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+            -H "$host" -H 'Origin: http://umbrel.local:4290' \
+            -H 'Content-Type: application/json' \
+            -d '{"slug":"smoke","name":"Smoke"}' "$base/api/projects")
+          test "$code" = 200
+          echo "same origin: 200"
+
+          widget=$(curl -fsS -H "$host" "$base/api/widget")
+          echo "$widget"
+          python3 - "$widget" <<'PY'
+          import json, sys
+          data = json.loads(sys.argv[1])
+          assert data["type"] == "four-stats", data
+          assert [item["title"] for item in data["items"]] == ["Todo", "Doing", "Review", "Done"], data
+          PY
+          echo "widget: four-stats ok"
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+            -H "$host" -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"smoke","version":"1"}}}' \
+            "$base/mcp")
+          test "$code" = 200
+          echo "mcp initialize: 200"
+
+      - name: Logs on failure
+        if: failure()
+        run: docker logs kanzo-smoke || true
+
+      - name: Clean up
+        if: always()
+        run: docker rm -f kanzo-smoke || true
