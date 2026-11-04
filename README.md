@@ -10,7 +10,7 @@ This repository contains the XRulescu Umbrel App Store. This app store is a comm
 | Graphana            | Oct 17th 2023 | Oct 17th 2023   | XRulescu   | 0.0.1   |
 | Waveshare UPS Hat D | Jun 05th 2025 | May 12th 2026   | XRulescu   | 0.0.25  |
 | Waveshare UPS Hat E | May 10th 2026 | May 12th 2026   | XRulescu   | 0.0.25  |
-| Kanzo               | Nov 04th 2026 | Nov 04th 2026   | XRulescu   | 0.3.2   |
+| Kanzo               | Nov 04th 2026 | Nov 04th 2026   | XRulescu   | 0.3.3   |
 
 
 ### Technical Details
@@ -36,7 +36,7 @@ https://user-images.githubusercontent.com/10330103/197889452-e5cd7e96-3233-4a09-
 
 This store packages the upstream release for Umbrel. The image is built from
 the pinned upstream source plus a small patch for Umbrel's reverse proxy and the
-home-screen widget; all credit for Kanzo belongs to its author.
+home-screen widgets; all credit for Kanzo belongs to its author.
 
 ## Kanzo MCP
 

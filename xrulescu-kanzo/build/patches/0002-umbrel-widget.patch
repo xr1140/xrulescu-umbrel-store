@@ -1,21 +1,24 @@
-Umbrel home-screen widget for Kanzo.
+Umbrel home-screen widgets for Kanzo.
 
-Adds GET /api/widget, a small JSON endpoint in the shape Umbrel's
-"four-stats" widget expects: task counts for Todo, Doing, Review and Done.
-Umbrel fetches it server-side from the container, outside its app proxy.
+Adds two JSON endpoints:
+- GET /api/widget: task counts for Todo, Doing, Review and Done.
+- GET /api/widget/projects: one row per project (up to 5) with open/done counts.
+
+Umbrel fetches both server-side from the container, outside its app proxy.
 diff --git a/src/web.rs b/src/web.rs
-index b94a668..ad64b5e 100644
+index b94a668..cff5d8d 100644
 --- a/src/web.rs
 +++ b/src/web.rs
-@@ -159,6 +159,7 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
+@@ -159,6 +159,8 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
          .route("/images/{file}", get(image_file))
          .route("/api/changes", get(changes))
          .route("/api/board", get(board))
 +        .route("/api/widget", get(widget))
++        .route("/api/widget/projects", get(widget_projects))
          .route("/api/search", get(search))
          .route("/api/projects", post(create_project))
          .route("/api/projects/{slug}", patch(update_project).delete(delete_project))
-@@ -450,6 +451,41 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
+@@ -450,6 +452,81 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
      .await
  }
  
@@ -49,6 +52,46 @@ index b94a668..ad64b5e 100644
 +                WidgetItem { title: "Review", text: count("review") },
 +                WidgetItem { title: "Done", text: count("done") },
 +            ],
++        })
++    })
++    .await
++}
++
++/// The per-project widget: one row per project with its open and done counts.
++#[derive(Serialize)]
++struct WidgetList {
++    #[serde(rename = "type")]
++    kind: &'static str,
++    refresh: &'static str,
++    link: &'static str,
++    items: Vec<WidgetListItem>,
++    #[serde(rename = "noItemsText")]
++    no_items_text: &'static str,
++}
++
++#[derive(Serialize)]
++struct WidgetListItem {
++    subtext: String,
++    text: String,
++}
++
++async fn widget_projects(State(home): Shared) -> Response {
++    with_store(home, move |_, s| {
++        let items = s
++            .list_projects()?
++            .iter()
++            .take(5)
++            .map(|p| {
++                let name = if p.name.is_empty() { p.slug.clone() } else { p.name.clone() };
++                WidgetListItem { subtext: name, text: format!("{} open · {} done", p.open, p.total - p.open) }
++            })
++            .collect();
++        Ok(WidgetList {
++            kind: "list",
++            refresh: "60s",
++            link: "",
++            items,
++            no_items_text: "No projects yet",
 +        })
 +    })
 +    .await
