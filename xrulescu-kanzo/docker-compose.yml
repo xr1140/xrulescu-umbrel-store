@@ -10,7 +10,7 @@ services:
 
   server:
     # The workflow rewrites this line with the image digest after each build.
-    image: ghcr.io/xr1140/kanzo-umbrel:0.3.2@sha256:94987df98e639d0601b72eae7c27c2069a524279acb302bd493cd56897b61072
+    image: ghcr.io/xr1140/kanzo-umbrel:0.3.3@sha256:6151c0b00822538ee541b20bf0c85f8e440109191006691af397f4ebfaac6577
     restart: on-failure
     init: true
     stop_grace_period: 30s
