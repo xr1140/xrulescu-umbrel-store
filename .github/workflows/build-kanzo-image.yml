@@ -5,7 +5,6 @@ on:
     branches: [main, master]
     paths:
       - "xrulescu-kanzo/build/**"
-      - ".github/workflows/build-kanzo-image.yml"
   workflow_dispatch:
 
 concurrency:
@@ -21,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Read the upstream pin
         run: grep -E '^[A-Za-z_][A-Za-z0-9_]*=' xrulescu-kanzo/build/upstream.env >> "$GITHUB_ENV"
@@ -90,6 +91,8 @@ jobs:
             echo "The manifest is already pinned to this image."
           else
             git commit -m "Pin Kanzo package ${KANZO_PACKAGE_VERSION} (${DIGEST})"
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
