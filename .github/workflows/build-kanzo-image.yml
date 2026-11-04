@@ -26,14 +26,6 @@ jobs:
       - name: Read the upstream pin
         run: grep -E '^[A-Za-z_][A-Za-z0-9_]*=' xrulescu-kanzo/build/upstream.env >> "$GITHUB_ENV"
 
-      - name: Check the package version
-        run: |
-          manifest_version=$(sed -n 's/^version: *"\(.*\)"/\1/p' xrulescu-kanzo/umbrel-app.yml)
-          if [ "$manifest_version" != "$KANZO_PACKAGE_VERSION" ]; then
-            echo "::error::upstream.env has KANZO_PACKAGE_VERSION=$KANZO_PACKAGE_VERSION but xrulescu-kanzo/umbrel-app.yml says $manifest_version"
-            exit 1
-          fi
-
       - name: Set the image name (GHCR needs lowercase)
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/kanzo-umbrel" >> "$GITHUB_ENV"
 
@@ -63,21 +55,31 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Pin the digest in the app manifest
+      - name: Pin the digest and bump the package version
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           python3 - "$IMAGE" "$KANZO_PACKAGE_VERSION" "$DIGEST" <<'PY'
           import pathlib, re, sys
           image, version, digest = sys.argv[1:4]
-          path = pathlib.Path("xrulescu-kanzo/docker-compose.yml")
-          text = path.read_text()
+
+          compose = pathlib.Path("xrulescu-kanzo/docker-compose.yml")
+          text = compose.read_text()
           line = f"    image: {image}:{version}@{digest}"
           text, found = re.subn(r"^    image: ghcr\.io/\S+$", line, text, flags=re.M)
           if found != 1:
               raise SystemExit("could not find the image line in xrulescu-kanzo/docker-compose.yml")
-          path.write_text(text)
+          compose.write_text(text)
+
+          manifest = pathlib.Path("xrulescu-kanzo/umbrel-app.yml")
+          text = manifest.read_text()
+          text, found = re.subn(r'^version: "[^"]*"$', f'version: "{version}"', text, flags=re.M)
+          if found != 1:
+              raise SystemExit("could not find the version line in xrulescu-kanzo/umbrel-app.yml")
+          manifest.write_text(text)
+
           print(line)
+          print(f"version: {version}")
           PY
 
       - name: Commit the pinned digest
@@ -86,11 +88,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add xrulescu-kanzo/docker-compose.yml
+          git add xrulescu-kanzo/docker-compose.yml xrulescu-kanzo/umbrel-app.yml
           if git diff --cached --quiet; then
             echo "The manifest is already pinned to this image."
           else
-            git commit -m "Pin Kanzo package ${KANZO_PACKAGE_VERSION} (${DIGEST})"
+            git commit -m "Release Kanzo package ${KANZO_PACKAGE_VERSION} (${DIGEST})"
             git fetch origin "${GITHUB_REF_NAME}"
             git rebase "origin/${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
