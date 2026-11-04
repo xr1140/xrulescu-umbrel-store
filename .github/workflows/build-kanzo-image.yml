@@ -25,6 +25,14 @@ jobs:
       - name: Read the upstream pin
         run: grep -E '^[A-Za-z_][A-Za-z0-9_]*=' xrulescu-kanzo/build/upstream.env >> "$GITHUB_ENV"
 
+      - name: Check the package version
+        run: |
+          manifest_version=$(sed -n 's/^version: *"\(.*\)"/\1/p' xrulescu-kanzo/umbrel-app.yml)
+          if [ "$manifest_version" != "$KANZO_PACKAGE_VERSION" ]; then
+            echo "::error::upstream.env has KANZO_PACKAGE_VERSION=$KANZO_PACKAGE_VERSION but xrulescu-kanzo/umbrel-app.yml says $manifest_version"
+            exit 1
+          fi
+
       - name: Set the image name (GHCR needs lowercase)
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/kanzo-umbrel" >> "$GITHUB_ENV"
 
@@ -50,7 +58,7 @@ jobs:
           push: true
           build-args: |
             KANZO_VERSION=${{ env.KANZO_VERSION }}
-          tags: ${{ env.IMAGE }}:${{ env.KANZO_VERSION }}
+          tags: ${{ env.IMAGE }}:${{ env.KANZO_PACKAGE_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -58,7 +66,7 @@ jobs:
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          python3 - "$IMAGE" "$KANZO_VERSION" "$DIGEST" <<'PY'
+          python3 - "$IMAGE" "$KANZO_PACKAGE_VERSION" "$DIGEST" <<'PY'
           import pathlib, re, sys
           image, version, digest = sys.argv[1:4]
           path = pathlib.Path("xrulescu-kanzo/docker-compose.yml")
@@ -81,7 +89,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "The manifest is already pinned to this image."
           else
-            git commit -m "Pin Kanzo ${KANZO_VERSION} (${DIGEST})"
+            git commit -m "Pin Kanzo package ${KANZO_PACKAGE_VERSION} (${DIGEST})"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
@@ -91,9 +99,9 @@ jobs:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           {
-            echo "### Kanzo ${KANZO_VERSION} for Umbrel"
+            echo "### Kanzo package ${KANZO_PACKAGE_VERSION} for Umbrel"
             echo
-            echo "- Image: \`${IMAGE}:${KANZO_VERSION}\`"
+            echo "- Image: \`${IMAGE}:${KANZO_PACKAGE_VERSION}\`"
             echo "- Digest: \`${DIGEST}\`"
             echo
             echo "Make the package public in GitHub's package settings, or Umbrel cannot pull it."
