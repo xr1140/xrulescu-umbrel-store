@@ -44,9 +44,9 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >-
-  Adds a second Umbrel home-screen widget: one row per project with open and
-  done counts. The existing four-stats widget is unchanged, and neither widget
-  changes the board's data or ports.
+  Makes the per-project widget activity-first: the top 3 projects by open work,
+  each with todo, doing and review counts. The global four-stats widget is
+  unchanged.
 submitter: XRulescu
 submission:
 widgets:
@@ -77,6 +77,6 @@ widgets:
       link: ""
       items:
         - subtext: "Kanzo on Umbrel"
-          text: "3 open · 15 done"
+          text: "3 todo · 1 doing · 0 review"
         - subtext: "memSpy"
-          text: "0 open · 0 done"
+          text: "0 todo · 0 doing · 0 review"

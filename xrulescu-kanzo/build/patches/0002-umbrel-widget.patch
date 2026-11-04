@@ -2,11 +2,12 @@ Umbrel home-screen widgets for Kanzo.
 
 Adds two JSON endpoints:
 - GET /api/widget: task counts for Todo, Doing, Review and Done.
-- GET /api/widget/projects: one row per project (up to 5) with open/done counts.
+- GET /api/widget/projects: the top 3 projects by open work, each with
+  Todo/Doing/Review counts.
 
 Umbrel fetches both server-side from the container, outside its app proxy.
 diff --git a/src/web.rs b/src/web.rs
-index b94a668..cff5d8d 100644
+index b94a668..10e5042 100644
 --- a/src/web.rs
 +++ b/src/web.rs
 @@ -159,6 +159,8 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
@@ -18,7 +19,7 @@ index b94a668..cff5d8d 100644
          .route("/api/search", get(search))
          .route("/api/projects", post(create_project))
          .route("/api/projects/{slug}", patch(update_project).delete(delete_project))
-@@ -450,6 +452,81 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
+@@ -450,6 +452,105 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
      .await
  }
  
@@ -77,13 +78,37 @@ index b94a668..cff5d8d 100644
 +
 +async fn widget_projects(State(home): Shared) -> Response {
 +    with_store(home, move |_, s| {
-+        let items = s
-+            .list_projects()?
++        let projects = s.list_projects()?;
++        let tasks = s.list_tasks_keeping_done(None, None, None)?.0;
++        let mut counts: HashMap<&str, [usize; 3]> = HashMap::new();
++        for task in &tasks {
++            let slot = match task.status.as_str() {
++                "todo" => 0,
++                "doing" => 1,
++                "review" => 2,
++                _ => continue,
++            };
++            counts.entry(task.project.as_str()).or_default()[slot] += 1;
++        }
++        let mut rows: Vec<(&str, usize, usize, usize)> = projects
 +            .iter()
-+            .take(5)
 +            .map(|p| {
-+                let name = if p.name.is_empty() { p.slug.clone() } else { p.name.clone() };
-+                WidgetListItem { subtext: name, text: format!("{} open · {} done", p.open, p.total - p.open) }
++                let name = if p.name.is_empty() { p.slug.as_str() } else { p.name.as_str() };
++                let [todo, doing, review] = counts.get(p.slug.as_str()).copied().unwrap_or([0; 3]);
++                (name, todo, doing, review)
++            })
++            .collect();
++        rows.sort_by(|a, b| {
++            let a_open = a.1 + a.2 + a.3;
++            let b_open = b.1 + b.2 + b.3;
++            b_open.cmp(&a_open).then_with(|| a.0.cmp(b.0))
++        });
++        let items = rows
++            .into_iter()
++            .take(3)
++            .map(|(name, todo, doing, review)| WidgetListItem {
++                subtext: name.to_string(),
++                text: format!("{todo} todo · {doing} doing · {review} review"),
 +            })
 +            .collect();
 +        Ok(WidgetList {

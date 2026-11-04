@@ -89,6 +89,7 @@ jobs:
           assert isinstance(data.get("items"), list), data
           for item in data["items"]:
               assert "subtext" in item and "text" in item, data
+              assert "todo" in item["text"] and "doing" in item["text"] and "review" in item["text"], data
           PY
           echo "project widget: list ok"
 
