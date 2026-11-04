@@ -14,7 +14,10 @@ ARG KANZO_VERSION
 WORKDIR /src
 COPY .build/src/kanzo-${KANZO_VERSION}/ ./
 COPY patches/ /patches/
-RUN patch -p1 --batch --forward < /patches/0001-trust-reverse-proxy.patch \
+RUN for p in /patches/*.patch; do \
+		echo "Applying $p"; \
+		patch -p1 --batch --forward < "$p" || exit 1; \
+	done \
 	&& cargo build --release --locked
 
 FROM alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f

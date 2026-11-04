@@ -1,0 +1,59 @@
+Umbrel home-screen widget for Kanzo.
+
+Adds GET /api/widget, a small JSON endpoint in the shape Umbrel's
+"four-stats" widget expects: task counts for Todo, Doing, Review and Done.
+Umbrel fetches it server-side from the container, outside its app proxy.
+diff --git a/src/web.rs b/src/web.rs
+index b94a668..ad64b5e 100644
+--- a/src/web.rs
++++ b/src/web.rs
+@@ -159,6 +159,7 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
+         .route("/images/{file}", get(image_file))
+         .route("/api/changes", get(changes))
+         .route("/api/board", get(board))
++        .route("/api/widget", get(widget))
+         .route("/api/search", get(search))
+         .route("/api/projects", post(create_project))
+         .route("/api/projects/{slug}", patch(update_project).delete(delete_project))
+@@ -450,6 +451,41 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
+     .await
+ }
+ 
++/// The Umbrel home-screen widget: how many tasks sit in each column.
++#[derive(Serialize)]
++struct Widget {
++    #[serde(rename = "type")]
++    kind: &'static str,
++    refresh: &'static str,
++    link: &'static str,
++    items: Vec<WidgetItem>,
++}
++
++#[derive(Serialize)]
++struct WidgetItem {
++    title: &'static str,
++    text: String,
++}
++
++async fn widget(State(home): Shared) -> Response {
++    with_store(home, move |_, s| {
++        let tasks = s.list_tasks_keeping_done(None, None, None)?.0;
++        let count = |status: &str| tasks.iter().filter(|t| t.status == status).count().to_string();
++        Ok(Widget {
++            kind: "four-stats",
++            refresh: "60s",
++            link: "",
++            items: vec![
++                WidgetItem { title: "Todo", text: count("todo") },
++                WidgetItem { title: "Doing", text: count("doing") },
++                WidgetItem { title: "Review", text: count("review") },
++                WidgetItem { title: "Done", text: count("done") },
++            ],
++        })
++    })
++    .await
++}
++
+ #[derive(Deserialize)]
+ struct SearchQuery {
+     #[serde(default)]
