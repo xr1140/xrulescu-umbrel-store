@@ -29,7 +29,7 @@ description: >-
 
   Updates arrive through Umbrel's app store; Kanzo's self-update is disabled
   in this package.
-developer: emanuele-em
+developer: Emanuele Micheletti
 website: https://github.com/emanuele-em/kanzo
 dependencies: []
 repo: https://github.com/emanuele-em/kanzo
