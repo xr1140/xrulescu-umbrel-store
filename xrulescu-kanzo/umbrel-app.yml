@@ -2,7 +2,7 @@ manifestVersion: 1
 id: xrulescu-kanzo
 category: developer
 name: Kanzo
-version: "0.3.0"
+version: "0.3.1"
 tagline: A tiny kanban board for you and your coding agents
 icon: https://raw.githubusercontent.com/emanuele-em/kanzo/main/src/logo.png
 description: >-
@@ -39,7 +39,9 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >-
-  First Umbrel package, built from Kanzo 0.3.0 with a small patch that lets the
-  board answer requests forwarded by Umbrel's app proxy.
+  Exposes Kanzo's MCP endpoint directly on port 4242, so agents can connect
+  without Umbrel's login and `kanzo join` works. That port has no
+  authentication: use it only on a trusted network or over a VPN. The board on
+  port 4290 stays behind Umbrel's login.
 submitter: XRulescu
 submission:
