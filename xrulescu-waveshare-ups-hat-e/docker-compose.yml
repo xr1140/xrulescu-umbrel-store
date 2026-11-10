@@ -11,7 +11,7 @@ services:
   # - GET /api/info → Full JSON API with battery/power metrics
   # - GET /widgets/ups → umbrelOS widget (four-stats: Battery %, Status, Voltage, Power)
   server:
-    image: xr1140/ups_hat_e-api:0.1.4@sha256:c1fd9d8d597f3676cb31c257a150297c7ea9848c9ee5934fe54939a64e176b63
+    image: xr1140/ups_hat_e-api:0.1.5@sha256:ef140a83ab1a8cfd080459a6381cb2a2046ad6a6c438fff4802a86f9a91451b7
     group_add:
       - 1015 # I2C group GID for Raspberry Pi I2C device access
     devices:
