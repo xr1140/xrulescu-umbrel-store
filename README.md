@@ -8,7 +8,7 @@ This repository contains the XRulescu Umbrel App Store. This app store is a comm
 |---------------------|---------------|-----------------|------------|---------|
 | InfluxDB            | Aug 15th 2023 | Aug 16th 2023   | XRulescu   | 0.0.1   |
 | Graphana            | Oct 17th 2023 | Oct 17th 2023   | XRulescu   | 0.0.1   |
-| Waveshare UPS Hat D | Jun 05th 2025 | Nov 10th 2026   | XRulescu   | 0.1.6   |
+| Waveshare UPS Hat D | Jun 05th 2025 | Nov 10th 2026   | XRulescu   | 0.1.7   |
 | Waveshare UPS Hat E | May 10th 2026 | Nov 10th 2026   | XRulescu   | 0.1.5   |
 | Kanzo               | Nov 04th 2026 | Nov 04th 2026   | XRulescu   | 0.3.4   |
 
