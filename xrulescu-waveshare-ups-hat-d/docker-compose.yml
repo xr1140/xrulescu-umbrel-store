@@ -10,7 +10,7 @@ services:
   # - GET /api/info → Full JSON API with battery/power metrics
   # - GET /widgets/ups → umbrelOS widget (four-stats: Battery %, Status, Voltage, Power)
   server:
-    image: xr1140/ups_hat_d-api:0.1.2@sha256:46027f73bdc4c12609f2727497df12fccfeae26872e7b9742e45a9d9999c6527
+    image: xr1140/ups_hat_d-api:0.1.3@sha256:86beee9c2870829a854b6f0c49656e6fdf998a765bf7989bb2ddc4cc66ac9632
     group_add:
       - 1015 # GID-ul grupului i2c pe gazda
     devices:
