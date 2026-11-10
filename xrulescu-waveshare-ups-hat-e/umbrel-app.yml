@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 name: Waveshare UPS Hat E
 category: Monitoring
-version: "0.1.2"
+version: "0.1.3"
 tagline: UPS Hat (E) for Raspberry Pi 4/5.
 icon: https://raw.githubusercontent.com/xr1140/xrulescu-umbrel-store/master/xrulescu-waveshare-ups-hat-e/assets/icon.svg
 description: >
@@ -24,8 +24,10 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: |
-  - `/api/info` no longer starts a subprocess per reading: `api_server.py` imports `get_ups_data()` from `ups_hat_e.py`. The driver keeps one `smbus2.SMBus` behind a lock and reopens it after a read error, replacing the per-process isolation. This removes the JSON round-trip, the return-code parsing, and the per-request log lines.
-  - Unchanged: the calibration baseline and the percent override still run on every read, in the same order.
+  - History retention deletes rows older than 15 days through the indexed `ts` column instead of rescanning 43,200 rowids on every insert.
+  - SQLite connections are kept per thread and dropped after an error. The calibration baseline is read and updated through the same connection, and `_apply_calibrated_percent` takes it as an argument.
+  - The dashboard fetches 2 hours by default; the chart button loads 7 days on demand. Wide windows label points with the date, so tooltips and axis ticks show which day a point belongs to.
+  - Switching between 2 hours and 7 days resets the zoom plugin, which otherwise kept a label-index range from the previous window and could leave the chart blank.
 submitter: XRulescu
 widgets:
   - id: "battery-stats"
