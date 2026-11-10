@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 name: Waveshare UPS Hat D
 category: Monitoring
-version: "0.1.4"
+version: "0.1.5"
 tagline: UPS Hat for Raspberry Pi 4.
 icon: https://raw.githubusercontent.com/xr1140/xrulescu-umbrel-store/master/xrulescu-waveshare-ups-hat-d/assets/icon.svg
 description: >
@@ -24,9 +24,8 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: |
-  - History storage (connection, schema, append, age-based retention, read) moves to `shared/history.py` and is used by both apps. No behavior change: the same rows are written and `/api/history` returns the same JSON.
-  - Both images now build from the repository root so `shared/` is in the build context. The two per-app `.dockerignore` files are replaced by one at the root, and the local build scripts pass the app Dockerfile with `-f`.
-  - Tests grow to 20, six of them covering the shared module.
+  - Routes, widget scaffolding, poll loop, and hardware-error mapping move to `shared/server.py` behind an `AppConfig`. Each app keeps its history schema, driver wiring, calibration, and widget items.
+  - No behavior change: same routes, payloads, headers, and status codes. `api_server.py` drops from 260 to 122 lines on D and from 360 to 214 on E.
 submitter: XRulescu
 widgets:
   - id: "battery-stats"
