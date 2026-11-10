@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 name: Waveshare UPS Hat E
 category: Monitoring
-version: "0.1.3"
+version: "0.1.4"
 tagline: UPS Hat (E) for Raspberry Pi 4/5.
 icon: https://raw.githubusercontent.com/xr1140/xrulescu-umbrel-store/master/xrulescu-waveshare-ups-hat-e/assets/icon.svg
 description: >
@@ -24,10 +24,9 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: |
-  - History retention deletes rows older than 15 days through the indexed `ts` column instead of rescanning 43,200 rowids on every insert.
-  - SQLite connections are kept per thread and dropped after an error. The calibration baseline is read and updated through the same connection, and `_apply_calibrated_percent` takes it as an argument.
-  - The dashboard fetches 2 hours by default; the chart button loads 7 days on demand. Wide windows label points with the date, so tooltips and axis ticks show which day a point belongs to.
-  - Switching between 2 hours and 7 days resets the zoom plugin, which otherwise kept a label-index range from the previous window and could leave the chart blank.
+  - History storage (connection, schema, append, age-based retention, read) moves to `shared/history.py` and is used by both apps. The calibration table is created through `ensure(extra_ddl=...)`, and the baseline read and update use the same connection. No behavior change: the same rows are written and `/api/history` returns the same JSON.
+  - Both images now build from the repository root so `shared/` is in the build context. The two per-app `.dockerignore` files are replaced by one at the root, and the local build scripts pass the app Dockerfile with `-f`.
+  - Tests grow to 20, six of them covering the shared module.
 submitter: XRulescu
 widgets:
   - id: "battery-stats"
