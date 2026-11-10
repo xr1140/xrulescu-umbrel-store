@@ -2,7 +2,7 @@ manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-d
 name: Waveshare UPS Hat D
 category: Monitoring
-version: "0.0.36"
+version: "0.1.2"
 tagline: UPS Hat for Raspberry Pi 4.
 icon: https://www.waveshare.com/w/upload/a/a7/Ws-watermark-en.svg
 description: >
@@ -21,10 +21,9 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 torOnly: false
-releaseNotes: >
-  - Integrated umbrelOS widget endpoint for dashboard display
-  - Widget shows battery percentage, status, current, and power
-  - Single Flask server handles all endpoints (web interface, API, widget)
+releaseNotes: |
+  - `/api/info` no longer starts a subprocess per reading: `api_server.py` imports `get_ups_data()` from `ups_hat_d.py`. The driver keeps one INA219 behind a lock and reopens it after a read error, replacing the per-process isolation. This removes the JSON round-trip, the return-code parsing, and the two per-request log lines.
+  - `/api/info` adds a `version` key read from `VERSION`, which the Dockerfile copies to `/app/VERSION`; it is `"unknown"` when the file is missing.
 submitter: XRulescu
 widgets:
   - id: "battery-stats"
