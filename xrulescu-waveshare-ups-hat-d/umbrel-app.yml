@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 name: Waveshare UPS Hat D
 category: Monitoring
-version: "0.1.7"
+version: "0.1.8"
 tagline: UPS Hat for Raspberry Pi 4.
 icon: https://raw.githubusercontent.com/xr1140/xrulescu-umbrel-store/master/xrulescu-waveshare-ups-hat-d/assets/icon.svg
 description: >
@@ -24,8 +24,9 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: |
-  - The base template, CSS, favicons, and the chart/poll JavaScript now live in `shared/`; this app keeps its metrics, gauge rendering, and panels. The Docker entrypoint is shared too.
-  - No behaviour change: same DOM ids, classes, endpoints, and UI.
+  - The history chart is drawn on a time axis with min-max decimation: a drag pans smoothly and keeps the zoom, and a week of points redraws in about 10 ms instead of 60 ms. The x axis shows times and dates instead of `11/5 5:33:15 AM` label text.
+  - The subtitle under the title shows the version reported by `/api/info`.
+  - The page heading reads `Waveshare UPS Hat (D)`, matching E.
 submitter: XRulescu
 widgets:
   - id: "battery-stats"
