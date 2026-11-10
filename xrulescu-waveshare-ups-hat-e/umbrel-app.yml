@@ -1,5 +1,7 @@
 manifestVersion: 1
 id: xrulescu-waveshare-ups-hat-e
+storage:
+  dataRoot: data
 name: Waveshare UPS Hat E
 category: Monitoring
 version: "0.1.2"
