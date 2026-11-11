@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 name: Waveshare UPS Hat E
 category: Monitoring
-version: "0.1.8"
+version: "0.1.9"
 tagline: UPS Hat (E) for Raspberry Pi 4/5.
 icon: https://raw.githubusercontent.com/xr1140/xrulescu-umbrel-store/master/xrulescu-waveshare-ups-hat-e/assets/icon.svg
 description: >
@@ -24,8 +24,9 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: |
-  - The history chart is drawn on a time axis with min-max decimation: a drag pans smoothly and keeps the zoom, and a week of points redraws in about 10 ms instead of 60 ms. The x axis shows times and dates instead of `11/5 5:33:15 AM` label text.
-  - The subtitle under the title shows the version reported by `/api/info`.
+  - The image is about half the size: the unused apt packages (`gosu`, `i2c-tools`, `libi2c-dev`, `python3-smbus2`) are gone, and pip and setuptools are stripped after the install. `python3-smbus2` was pulling Debian's Python and its stdlib, which the app never used. 294 MB to 152 MB on arm64.
+  - `i2c-tools` is no longer inside the container; debug the bus from the host with `sudo i2cdetect -y 1`. The app reads it through `smbus2`.
+  - Asset URLs carry the app version, so an update no longer needs a hard reload to pick up new CSS or JavaScript.
 submitter: XRulescu
 widgets:
   - id: "battery-stats"
