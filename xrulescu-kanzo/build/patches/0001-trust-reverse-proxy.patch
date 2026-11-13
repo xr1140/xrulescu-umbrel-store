@@ -9,13 +9,13 @@ This adds KANZO_TRUST_PROXY=1: the guard accepts the proxy's Host, and an Origin
 is accepted when its authority matches that Host, over http or https. Anything
 else is still refused, so a cross-site page cannot drive the API.
 
-Only set it when a proxy is a sole way into the board.
+Only set it when a proxy is the sole way into the board.
 diff --git a/src/web.rs b/src/web.rs
-index b94a668..354c5e6 100644
+index 0c6ab81..359aa48 100644
 --- a/src/web.rs
 +++ b/src/web.rs
-@@ -188,6 +188,25 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
-         .with_state(Arc::new(home))
+@@ -232,6 +232,25 @@ async fn stamp_version(mut res: Response) -> Response {
+     res
  }
  
 +/// A reverse proxy (Docker, Umbrel, a tunnel) sends the browser's own `Host`, which is
@@ -37,10 +37,10 @@ index b94a668..354c5e6 100644
 +        .is_some_and(|authority| authority.eq_ignore_ascii_case(host))
 +}
 +
- /// Who may use the board: which Host headers it answers to, and whether other
- /// computers may reach it. Also what this computer does on the network.
- ///
-@@ -288,6 +307,10 @@ impl Guard {
+ /// DNS rebinding needs a domain name the attacker controls, so the board only accepts
+ /// `localhost`, IP addresses and, when it listens on the network, this machine's own names.
+ struct Guard {
+@@ -315,6 +334,10 @@ impl Guard {
      }
  
      fn allows(&self, host: &str) -> bool {
@@ -51,7 +51,7 @@ index b94a668..354c5e6 100644
          let (name, port) = match host.rsplit_once(':') {
              Some((n, p)) if !p.contains(']') => (n, Some(p)),
              _ => (host, None),
-@@ -339,7 +362,9 @@ async fn protect(State(guard): State<Arc<Guard>>, req: Request, next: Next) -> R
+@@ -359,7 +382,9 @@ async fn protect(State(guard): State<Arc<Guard>>, req: Request, next: Next) -> R
                  && o.as_bytes()[..7].eq_ignore_ascii_case(b"http://")
                  && o.as_bytes()[7..].eq_ignore_ascii_case(host.as_bytes())
          };

@@ -7,10 +7,10 @@ Adds two JSON endpoints:
 
 Umbrel fetches both server-side from the container, outside its app proxy.
 diff --git a/src/web.rs b/src/web.rs
-index b94a668..10e5042 100644
+index 359aa48..a6ead3b 100644
 --- a/src/web.rs
 +++ b/src/web.rs
-@@ -159,6 +159,8 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
+@@ -181,6 +181,8 @@ fn router(home: Home, guard: Arc<Guard>, shutdown: CancellationToken) -> Router
          .route("/images/{file}", get(image_file))
          .route("/api/changes", get(changes))
          .route("/api/board", get(board))
@@ -19,7 +19,7 @@ index b94a668..10e5042 100644
          .route("/api/search", get(search))
          .route("/api/projects", post(create_project))
          .route("/api/projects/{slug}", patch(update_project).delete(delete_project))
-@@ -450,6 +452,105 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
+@@ -510,6 +512,105 @@ async fn board(State(home): Shared, Query(q): Query<BoardQuery>) -> Response {
      .await
  }
  
@@ -58,7 +58,7 @@ index b94a668..10e5042 100644
 +    .await
 +}
 +
-+/// The per-project widget: one row per project with its open and done counts.
++/// The per-project widget: the top projects by open work, with their column counts.
 +#[derive(Serialize)]
 +struct WidgetList {
 +    #[serde(rename = "type")]
