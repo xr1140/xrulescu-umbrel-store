@@ -27,4 +27,27 @@ EOF
 	mv "$tmp" "$KANZO_HOME/config.toml"
 fi
 
+# A local safety copy before a start where the board changed. Backups live in
+# the data folder, rotate to the newest five, and are skipped when the database
+# has not changed since the newest one.
+backups="$KANZO_HOME/backups"
+mkdir -p "$backups"
+db="$KANZO_HOME/kanzo.db"
+if [ -f "$db" ]; then
+	latest=$(ls -1t "$backups"/kanzo-*.tar.gz 2>/dev/null | head -n 1)
+	if [ -z "$latest" ] || [ "$db" -nt "$latest" ]; then
+		stamp=$(date +%Y%m%d-%H%M%S)
+		archive="$backups/kanzo-$stamp-$$.tar.gz"
+		if tar -czf "$archive" -C "$KANZO_HOME" --exclude=backups --exclude=kanzo.lock .; then
+			echo "kanzo: backup at $archive"
+			ls -1t "$backups"/kanzo-*.tar.gz 2>/dev/null | tail -n +6 | while IFS= read -r old; do
+				rm -f "$old"
+			done
+		else
+			echo "kanzo: cannot write a backup; starting anyway" >&2
+			rm -f "$archive"
+		fi
+	fi
+fi
+
 exec kanzo --no-open "$@"
