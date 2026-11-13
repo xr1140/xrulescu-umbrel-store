@@ -44,9 +44,7 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >-
-  Makes the per-project widget activity-first: the top 3 projects by open work,
-  each with todo, doing and review counts. The global four-stats widget is
-  unchanged.
+  Updates Kanzo to 0.4.2 from the upstream release.
 submitter: XRulescu
 submission:
 widgets:
