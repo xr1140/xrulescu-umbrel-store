@@ -1,0 +1,177 @@
+name: Check for a new Kanzo release
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read the current pin
+        id: current
+        run: |
+          set -a
+          . xrulescu-kanzo/build/upstream.env
+          set +a
+          echo "version=$KANZO_VERSION" >> "$GITHUB_OUTPUT"
+          echo "package=$KANZO_PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Find the latest upstream release
+        id: upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=$(gh api repos/emanuele-em/kanzo/releases/latest --jq '.tag_name')
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Compare versions
+        id: compare
+        run: |
+          python3 - "${{ steps.current.outputs.version }}" "${{ steps.upstream.outputs.version }}" "${{ steps.current.outputs.package }}" >> "$GITHUB_OUTPUT" <<'PY'
+          import sys
+
+          current, latest, package = sys.argv[1:4]
+
+          def parts(value):
+              return tuple(int(piece) for piece in value.split(".")[:3])
+
+          if parts(latest) <= parts(current):
+              print("update=false")
+          else:
+              if parts(latest) > parts(package):
+                  candidate = latest
+              else:
+                  major, minor, patch = parts(package)
+                  candidate = f"{major}.{minor}.{patch + 1}"
+              print("update=true")
+              print(f"package={candidate}")
+          PY
+
+      - name: Download the release and check the patches
+        if: steps.compare.outputs.update == 'true'
+        id: check
+        run: |
+          set -euo pipefail
+          version="${{ steps.upstream.outputs.version }}"
+          url="https://github.com/emanuele-em/kanzo/releases/download/v${version}/source.tar.gz"
+
+          curl -fsSL "$url" -o /tmp/source.tar.gz
+          sha=$(sha256sum /tmp/source.tar.gz | cut -d' ' -f1)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+          mkdir -p /tmp/src
+          tar -xzf /tmp/source.tar.gz -C /tmp/src
+          src="/tmp/src/kanzo-${version}"
+          test -f "$src/Cargo.toml"
+
+          : > /tmp/patch-check.log
+          failed=0
+          for p in "$GITHUB_WORKSPACE"/xrulescu-kanzo/build/patches/*.patch; do
+            echo "== $p" >> /tmp/patch-check.log
+            if ! (cd "$src" && patch -p1 --batch --forward < "$p") >> /tmp/patch-check.log 2>&1; then
+              failed=1
+            fi
+          done
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+          cat /tmp/patch-check.log
+
+      - name: Prepare the update branch
+        if: steps.compare.outputs.update == 'true'
+        id: prepare
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          version="${{ steps.upstream.outputs.version }}"
+          package="${{ steps.compare.outputs.package }}"
+          sha="${{ steps.check.outputs.sha }}"
+          url="https://github.com/emanuele-em/kanzo/releases/download/v${version}/source.tar.gz"
+          branch="kanzo-upstream-${version}"
+
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            echo "Branch $branch already exists; leaving it for review."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          sed -i "s|^KANZO_VERSION=.*|KANZO_VERSION=${version}|" xrulescu-kanzo/build/upstream.env
+          sed -i "s|^KANZO_PACKAGE_VERSION=.*|KANZO_PACKAGE_VERSION=${package}|" xrulescu-kanzo/build/upstream.env
+          sed -i "s|^KANZO_SOURCE_URL=.*|KANZO_SOURCE_URL=${url}|" xrulescu-kanzo/build/upstream.env
+          sed -i "s|^KANZO_SOURCE_SHA256=.*|KANZO_SOURCE_SHA256=${sha}|" xrulescu-kanzo/build/upstream.env
+
+          # Update the notes only; the build workflow bumps umbrel-app.yml's version.
+          python3 - "$version" <<'PY'
+          import pathlib
+          import sys
+
+          version = sys.argv[1]
+          path = pathlib.Path("xrulescu-kanzo/umbrel-app.yml")
+          lines = path.read_text().splitlines()
+          start = next(i for i, line in enumerate(lines) if line.startswith("releaseNotes:"))
+          end = start + 1
+          while end < len(lines) and (lines[end].startswith("  ") or lines[end].strip() == ""):
+              end += 1
+          lines[start:end] = [
+              "releaseNotes: >-",
+              f"  Updates Kanzo to {version} from the upstream release.",
+          ]
+          path.write_text("\n".join(lines) + "\n")
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add xrulescu-kanzo/build/upstream.env xrulescu-kanzo/umbrel-app.yml
+          git commit -m "Update Kanzo to ${version}"
+          git push origin "$branch"
+
+      - name: Open the update pull request
+        if: steps.compare.outputs.update == 'true' && steps.prepare.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          version="${{ steps.upstream.outputs.version }}"
+          package="${{ steps.compare.outputs.package }}"
+          branch="kanzo-upstream-${version}"
+          body=/tmp/kanzo-update-pr.md
+
+          {
+            echo "Upstream release: https://github.com/emanuele-em/kanzo/releases/tag/v${version}"
+            echo
+            echo "- \`KANZO_VERSION=${version}\`"
+            echo "- \`KANZO_PACKAGE_VERSION=${package}\`"
+            echo "- source SHA-256: \`${{ steps.check.outputs.sha }}\`"
+            echo
+            if [ "${{ steps.check.outputs.failed }}" = "1" ]; then
+              echo "**Patch check failed.** Refresh the patches in \`xrulescu-kanzo/build/patches/\` before merging."
+            else
+              echo "Patch check passed: both patches apply to the new source."
+            fi
+            echo
+            echo "The manifest version is left at the previous release. Merging triggers the image build, which pins the digest and bumps \`umbrel-app.yml\` to ${package}."
+            echo
+            echo '```'
+            sed -n '1,120p' /tmp/patch-check.log
+            echo '```'
+          } > "$body"
+
+          if [ "${{ steps.check.outputs.failed }}" = "1" ]; then
+            gh pr create --base master --head "$branch" --draft \
+              --title "Update Kanzo to ${version} (patches need refresh)" --body-file "$body"
+          else
+            gh pr create --base master --head "$branch" \
+              --title "Update Kanzo to ${version}" --body-file "$body"
+          fi
