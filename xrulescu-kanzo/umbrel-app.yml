@@ -44,9 +44,13 @@ defaultUsername: ""
 defaultPassword: ""
 torOnly: false
 releaseNotes: >-
-  Updates Kanzo to 0.4.2 from the upstream release.
+  Creates a local backup of the board at startup when the database changed,
+  keeping the newest 5 copies in the data folder. The backups are excluded
+  from Umbrel backups.
 submitter: XRulescu
 submission:
+backupIgnore:
+  - data/backups/*
 widgets:
   - id: "task-counts"
     type: "four-stats"
